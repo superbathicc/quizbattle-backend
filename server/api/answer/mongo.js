@@ -26,5 +26,6 @@ let schema = new mongoose.Schema({
   }
 });
 
+module.exports.mongoose = mongoose;
 module.exports.schema = schema;
 module.exports.model = mongoose.model('answer', schema);

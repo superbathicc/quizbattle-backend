@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
-const answer = require('../answer');
-const category = require('../category');
+const answerAPI = require('../answer');
+const categoryAPI = require('../category');
 
 /**
- * @typedef {Object} Question
+ * @typedef {object} Question
  * @prop {string} text
- * @prop {Array.<answer.mongo.Answer>} answers
+ * @prop {categoryAPI.mongo.Category} category
+ * @prop {Array.<answerAPI.mongo.Answer>} answers
  * @prop {Date} created
  * @prop {Date} updated
  * @prop {mongoose.Types.ObjectId} _id
@@ -17,13 +18,22 @@ let schema = new mongoose.Schema({
     type: String,
     required: true
   },
-  answers: {
+  answers: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: answer.mongo.model.modelName
-  },
+    ref: answerAPI.mongo.model.modelName
+  }],
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: category.mongo.model.modelName
+    ref: categoryAPI.mongo.model.modelName
+  },
+  data: {
+    type: String
+  },
+  dataType: {
+    type: String
+  },
+  dataEncoding: {
+    type: String
   }
 }, {
   timestamps: {
@@ -32,5 +42,6 @@ let schema = new mongoose.Schema({
   }
 });
 
+module.exports.mongoose = mongoose;
 module.exports.schema = schema;
 module.exports.model = mongoose.model('question', schema)
