@@ -17,7 +17,27 @@ function router(app, ...items) {
     console.log(`setting routes for ${item.name}`)
     Object.entries(item.handler).forEach(entry => {
       if(typeof entry[1] === 'function') {
-        console.log('setting up')
+        console.log('setting up ' + entry[0]);
+        let segments = entry[0].split(' ');
+        let method = segments[0];
+        let path = segments[1];
+        switch(method.toUpperCase()) {
+          case 'GET':
+            app.get(path, entry[1]);
+            break;
+          case 'POST':
+            app.post(path, entry[1]);
+            break;
+          case 'PUT':
+            app.put(path, entry[1]);
+            break;
+          case 'DELETE':
+            app.delete(path, entry[1]);
+            break;
+          case 'OPTIONS':
+            app.options(path, entry[1]);
+            break;
+        }
       }
     });
   });
@@ -34,6 +54,9 @@ function use(app) {
   }, {
     name: answerAPI.config.name,
     handler: answerAPI.handler
+  }, {
+    name: categoryAPI.config.name,
+    handler: categoryAPI.handler
   })
 }
 

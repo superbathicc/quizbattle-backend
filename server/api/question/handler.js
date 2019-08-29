@@ -2,6 +2,7 @@ const core = require('./core');
 const amw = require('../../../lib/async-middleware');
 const answerAPI = require('../answer');
 const categoryAPI = require('../category');
+const multer = require('multer');
 
 module.exports['POST /question'] = amw(async (req, res) => {
   let question = await core.create(req.body['text']);
@@ -11,18 +12,35 @@ module.exports['POST /question'] = amw(async (req, res) => {
   .jsonp(question);
 });
 
+module.exports['GET /question'] = amw(async (req, res) => {
+  let category;
+  if(typeof req.query === 'object' && req.query !== null) {
+    if(typeof req.query.category === 'string')
+      category = await categoryAPI.core.get(req.query.category);
+  }
+
+  let question = await core.getRandom(category);
+
+  res
+  .status(200)
+  .jsonp(question);
+})
+
 module.exports['GET /question/:questionId'] = amw(async (req, res) => {
   let question = await core.get(req.params.questionId);
+
+  let result = question.toObject();
 
   if(typeof req.query === 'object' && req.query !== null) {
     if(req.query['answers']) {
       question = core.limitAnswers(question, Number(req.query['answers']));
+      result.selected = question.selectedAnswers
     }
   }
 
   res
   .status(200)
-  .jsonp(question);
+  .jsonp(result);
 });
 
 module.exports['PUT /question/:questionId'] = amw(async (req, res) => {
@@ -52,12 +70,17 @@ module.exports['POST /question/:questionId/answer'] = amw(async (req, res) => {
 
   let answers;
   if(Array.isArray(req.body)) {
-    answers = await Promise.all(answers.map(answer => Promise.resolve(answerAPI.core.createOrGet(answer))));
+    answers = await Promise.all(req.body.map(answer =>
+      Promise.resolve(answerAPI.core.createOrGet(answer))));
   } else if(typeof req.body !== undefined) {
-    await answerAPI.core.createOrGet(req.body)
+    answers = await answerAPI.core.createOrGet(req.body);
   }
 
-  question = await core.addAnswer(question, ...answers);
+  if(Array.isArray(answers)) {
+    question = await core.addAnswer(question, ...answers);
+  } else {
+    question = await core.addAnswer(question, answers);
+  }
 
   res
   .status(200)

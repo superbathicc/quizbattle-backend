@@ -43,12 +43,10 @@ module.exports.get = get;
  * @param {boolean} correct 
  */
 async function create(text, correct) {
-  let q = mongo.model.create({
+  return await mongo.model.create({
     text,
     correct
   });
-
-  return await q.exec();
 }
 
 module.exports.create = create;

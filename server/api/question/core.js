@@ -35,7 +35,7 @@ module.exports.check = check;
  * @prop {number} maxAnswers
  * @param {string} id
  * @param {GetOptions} options
- * @returns {mongo.Question} 
+ * @returns {Promise.<mongo.Question|mongo.model>} 
  */
 async function get(id) {
   let q = mongo.model.findById(String(id));
@@ -53,6 +53,8 @@ module.exports.get = get;
  * @param {number} amount 
  */
 function limitAnswers(question, amount) {
+  check(question, {throw: true, name: 'question', type: 'parameter'});
+  
   let maxAnswers = amount || config.maxAnswers;
 
   if(typeof options === 'object' && options !== null) {
@@ -66,7 +68,7 @@ function limitAnswers(question, amount) {
       let correctAnswers = question.answers
       .filter(answ => answ.correct);
   
-      for(let i = 0; i < Math.trunc(Math.random() * maxAnswers); i++) {
+      for(let i = 0; i < Math.trunc(Math.random() * maxAnswers) + 1; i++) {
         let index = Math.trunc(Math.random() * correctAnswers.length);
         let answ = correctAnswers[index];
         selectedAnswers.push(answ);
@@ -104,7 +106,7 @@ async function create(text) {
     throw new TypeError('required parameter \'text\' is not a string');
 
   let createdQuestion = await mongo.model.create({
-    text: question.text
+    text
   });
 
   return createdQuestion;
@@ -135,20 +137,21 @@ module.exports.setCategory = setCategory;
  * @param  {...answerAPI.mongo.Question} answers
  */
 async function addAnswer(question, ...answers) {
+  check(question, {throw: true, name: 'question', type: 'parameter'});
+
   question.answers = question.answers.map(answer => {
     if(typeof answer === 'object'
     && answer !== null
     && answer._id)
-      return answer._id
+      return String(answer._id)
     else return answer;
   });
 
-  check(question, {throw: true, name: 'question', type: 'parameter'});
   answers = answers
   .filter(answer => answerAPI.core.check(answer))
   .map(answer => mongo.mongoose.Types.ObjectId(String(answer._id)));
 
-  question.answers.push(answers);
+  question.answers.push(...answers);
   question.answers = Array.from(new Set(question.answers.map(a => {
     if(typeof a === 'object' && a !== null) {
       if(typeof a._id !== 'undefined') {
@@ -183,3 +186,32 @@ async function update(question, obj) {
 }
 
 module.exports.update = update;
+
+/**
+ * gets a random question
+ * @param {categoryAPI.mongo.Category} category
+ * @returns {Promise.<mongo.Question|mongo.model>}
+ */
+async function getRandom(category) {
+  if(categoryAPI.core.check(category)) {
+    let count = await mongo.model.count({
+      'category': mongo.mongoose.Types.ObjectId(String(category._id))
+    }).exec();
+    
+    return await mongo.model
+    .findOne({category: mongo.mongoose.Types.ObjectId(String(category._id))})
+    .skip(Math.trunc(Math.random() * count))
+    .populate('answers')
+    .populate('category')
+    .exec();
+  } else {
+    let index = Math.trunc(Math.random() * await mongo.model.countDocuments());
+    return await mongo.model.findOne()
+    .skip(index)
+    .populate('answers')
+    .populate('category')
+    .exec();
+  }
+}
+
+module.exports.getRandom = getRandom;

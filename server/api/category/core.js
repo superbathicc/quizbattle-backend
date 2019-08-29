@@ -57,3 +57,15 @@ async function createOrGet(category) {
 }
 
 module.exports.createOrGet = createOrGet;
+
+async function search(searchTerm) {
+  let q = mongo.model.find();
+
+  if(typeof searchTerm === 'string') {
+    q.where('name', {$regex: searchTerm})
+  }
+
+  return await q.exec();
+}
+
+module.exports.search = search;
