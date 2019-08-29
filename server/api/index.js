@@ -2,7 +2,6 @@ const express = require('express');
 const questionAPI = require('./question');
 const categoryAPI = require('./category');
 const answerAPI = require('./answer');
-const clientAPI = require('./client');
 
 /**
  * 
@@ -59,9 +58,6 @@ function use(app) {
   }, {
     name: categoryAPI.config.name,
     handler: categoryAPI.handler
-  }, {
-    name: clientAPI.config.name,
-    handler: clientAPI.handler
   })
 }
 
