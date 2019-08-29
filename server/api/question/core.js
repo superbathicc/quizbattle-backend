@@ -12,7 +12,7 @@ const answerAPI = require('../answer');
  * @param {mongo.Question} question 
  * @param {CheckOptions} options 
  */
-async function check(question, options) {
+function check(question, options) {
   let valid = typeof question === 'object'
   && question !== null
   && question instanceof mongo.model;
@@ -215,3 +215,24 @@ async function getRandom(category) {
 }
 
 module.exports.getRandom = getRandom;
+
+/**
+ * 
+ * @param {mongo.Question|mongo.model} question 
+ * @param {string} name 
+ * @param {Buffer} buffer 
+ * @returns {Promise.<mongo.Question|mongo.model>}
+ */
+async function data(question, name, type, buffer) {
+  check(question, {throw: true, name: 'question', type: 'parameter'});
+
+  question.data = buffer.toString('base64');
+  question.dataEncoding = 'base64';
+  question.dataName = name;
+  question.dataType = type;
+
+  question = await question.save();
+  return question;
+}
+
+module.exports.data = data;

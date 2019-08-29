@@ -3,6 +3,26 @@ const questionAPI = require('./question');
 const categoryAPI = require('./category');
 const answerAPI = require('./answer');
 
+function prepareRouter(app, method, path, ...fn) {
+  switch(method.toUpperCase()) {
+    case 'GET':
+      app.get(path, ...fn);
+      break;
+    case 'POST':
+      app.post(path, ...fn);
+      break;
+    case 'PUT':
+      app.put(path, ...fn);
+      break;
+    case 'DELETE':
+      app.delete(path, ...fn);
+      break;
+    case 'OPTIONS':
+      app.options(path, ...fn);
+      break;
+  }
+}
+
 /**
  * 
  * @typedef {object} RouterItem
@@ -15,28 +35,14 @@ function router(app, ...items) {
   items.forEach(item => {
     console.log(`setting routes for ${item.name}`)
     Object.entries(item.handler).forEach(entry => {
+      let segments = entry[0].split(' ');
+      let method = segments.shift();
+      let path = String(segments.join(' '));
+      console.log(`setting handler '${method}' on '${path}'`)
       if(typeof entry[1] === 'function') {
-        let segments = entry[0].split(' ');
-        let method = segments.shift();
-        let path = String(segments.join(' '));
-        console.log(`setting handler '${method}' on '${path}'`)
-        switch(method.toUpperCase()) {
-          case 'GET':
-            app.get(path, entry[1]);
-            break;
-          case 'POST':
-            app.post(path, entry[1]);
-            break;
-          case 'PUT':
-            app.put(path, entry[1]);
-            break;
-          case 'DELETE':
-            app.delete(path, entry[1]);
-            break;
-          case 'OPTIONS':
-            app.options(path, entry[1]);
-            break;
-        }
+        prepareRouter(app, method, path, entry[1])
+      } else if(typeof Array.isArray(entry[1])) {
+        prepareRouter(app, method, path, ...entry[1]);
       }
     });
   });

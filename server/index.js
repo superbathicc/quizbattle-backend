@@ -26,11 +26,15 @@ async function init() {
     extended: true,
     type: 'application/x-www-form-urlencoded'
   }));
+
   
-  app.use(cors());
-
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+  });
+  
   api.use(app);
-
+  
   app.use((err, req, res, next) => {
     if(typeof err === 'object' && err instanceof Error) {
       console.error(err);

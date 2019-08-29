@@ -34,6 +34,9 @@ let schema = new mongoose.Schema({
   },
   dataEncoding: {
     type: String
+  },
+  dataName: {
+    type: String
   }
 }, {
   timestamps: {

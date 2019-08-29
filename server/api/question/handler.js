@@ -86,3 +86,26 @@ module.exports['POST /question/:questionId/answer'] = amw(async (req, res) => {
   .status(200)
   .jsonp(question)
 });
+
+
+let upload = new multer({
+  dest: require('os').tmpdir(),
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 320000000
+  }
+});
+
+module.exports['POST /question/:questionId/data'] = [
+  upload.single('data'),
+  amw(async (req, res) => {
+    if(typeof req.file === 'object' && req.file !== null) {
+      let question = await core.get(req.params.questionId);
+
+      question = await core.data(question, req.file.originalname, req.file.mimetype, req.file.buffer, req.file.size)
+
+      res
+      .status(200)
+      .jsonp(question);
+    } 
+  })]
