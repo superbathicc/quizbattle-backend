@@ -41,7 +41,7 @@ function router(app, ...items) {
     });
   });
 
-  console.log(app._router.stack);
+  // console.log(app._router.stack);
 }
 
 /**

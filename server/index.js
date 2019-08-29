@@ -4,6 +4,7 @@ const os = require('os');
 const api = require('./api');
 const conf = require('../config'); 
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 let app = express();
 
@@ -25,6 +26,8 @@ async function init() {
     extended: true,
     type: 'application/x-www-form-urlencoded'
   }));
+  
+  app.use(cors());
 
   api.use(app);
 
