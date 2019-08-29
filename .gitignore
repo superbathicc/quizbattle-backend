@@ -1,2 +1,5 @@
 node_modules
 .instance
+*.bat
+*.sh
+start.bat
