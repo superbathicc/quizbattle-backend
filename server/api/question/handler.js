@@ -86,5 +86,3 @@ module.exports['POST /question/:questionId/answer'] = amw(async (req, res) => {
   .status(200)
   .jsonp(question)
 });
-
-module.exports

@@ -2,7 +2,7 @@ const express = require('express');
 const questionAPI = require('./question');
 const categoryAPI = require('./category');
 const answerAPI = require('./answer');
-
+const clientAPI = require('./client');
 
 /**
  * 
@@ -17,10 +17,10 @@ function router(app, ...items) {
     console.log(`setting routes for ${item.name}`)
     Object.entries(item.handler).forEach(entry => {
       if(typeof entry[1] === 'function') {
-        console.log('setting up ' + entry[0]);
         let segments = entry[0].split(' ');
-        let method = segments[0];
-        let path = segments[1];
+        let method = segments.shift();
+        let path = String(segments.join(' '));
+        console.log(`setting handler '${method}' on '${path}'`)
         switch(method.toUpperCase()) {
           case 'GET':
             app.get(path, entry[1]);
@@ -41,6 +41,8 @@ function router(app, ...items) {
       }
     });
   });
+
+  console.log(app._router.stack);
 }
 
 /**
@@ -57,6 +59,9 @@ function use(app) {
   }, {
     name: categoryAPI.config.name,
     handler: categoryAPI.handler
+  }, {
+    name: clientAPI.config.name,
+    handler: clientAPI.handler
   })
 }
 
