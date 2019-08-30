@@ -67,8 +67,13 @@ function limitAnswers(question, amount) {
       let selectedAnswers = [];
       let correctAnswers = question.answers
       .filter(answ => answ.correct);
-  
-      for(let i = 0; i < Math.trunc(Math.random() * maxAnswers) + 1; i++) {
+      
+      let rcorrect = correctAnswers.length < maxAnswers
+      ? correctAnswers.length 
+      : maxAnswers;
+      rcorrect = Math.trunc(1 + Math.random() * (rcorrect - 1));
+
+      for(let i = 0; i < rcorrect; i++) {
         let index = Math.trunc(Math.random() * correctAnswers.length);
         let answ = correctAnswers[index];
         selectedAnswers.push(answ);
@@ -101,12 +106,13 @@ module.exports.limitAnswers = limitAnswers;
  * creates a new question
  * @param {string} text
  */
-async function create(text) {
+async function create(text, time) {
   if(typeof text !== 'string')
     throw new TypeError('required parameter \'text\' is not a string');
 
   let createdQuestion = await mongo.model.create({
-    text
+    text,
+    time
   });
 
   return createdQuestion;

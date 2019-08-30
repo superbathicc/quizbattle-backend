@@ -5,7 +5,7 @@ const categoryAPI = require('../category');
 const multer = require('multer');
 
 module.exports['POST /question'] = amw(async (req, res) => {
-  let question = await core.create(req.body['text']);
+  let question = await core.create(req.body['text'], req.body['time']);
 
   res
   .status(201)
@@ -22,16 +22,18 @@ module.exports['GET /question'] = amw(async (req, res) => {
     if(typeof req.query.answers !== 'undefined')
       maxAnswers = Number(req.query.answers);
   }
-
+  
   let question = await core.getRandom(category);
+  let result = question.toObject();
 
   if(maxAnswers) {
-    question = await core.limitAnswers(question, maxAnswers)
+    question = await core.limitAnswers(question, maxAnswers);
+    result.selected = question.selectedAnswers;
   }
 
   res
   .status(200)
-  .jsonp(question);
+  .jsonp(result);
 })
 
 module.exports['GET /question/:questionId'] = amw(async (req, res) => {
