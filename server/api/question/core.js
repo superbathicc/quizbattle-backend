@@ -90,7 +90,7 @@ function limitAnswers(question, amount) {
           let index = Math.trunc(Math.random() * wrongAnswers.length);
           let answ = wrongAnswers[index];
           selectedAnswers.push(answ);
-          correctAnswers.splice(index, 1);
+          wrongAnswers.splice(index, 1);
         }
       }
       question.selectedAnswers = selectedAnswers;
