@@ -72,7 +72,7 @@ async function pullRepository(p) {
   });
 
   cp.stdout.on('data', chunk => {
-    process.stdin.write('git: ') + chunk.toString('utf-8');
+    process.stdout.write('git: ') + chunk.toString('utf-8');
   });  
 
   return await new Promise((resolve, reject) => {
