@@ -59,12 +59,12 @@ module.exports.create = create;
  * @returns {Promise<mongo.Answer>}
  */
 async function createOrGet (answer) {
-  if(typeof answer === 'object'
-  && typeof answer.text === 'string'
-  && typeof answer.correct === 'boolean') {
-    return await create(answer.text, answer.correct);
-  } else if(typeof answer === 'string') {
-    return await get(answer);
+  if(typeof answer === 'object')
+    if(typeof answer.text === 'string'
+    && typeof answer.correct === 'boolean')
+      return await create(answer.text, answer.correct);
+    else if(typeof answer.id === 'string') {
+      return await get(answer.id);
   } else throw new TypeError('\'answer\' is not a string or an object');
 }
 

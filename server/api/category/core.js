@@ -48,12 +48,14 @@ async function get(id) {
 module.exports.get = get;
 
 async function createOrGet(category) {
-  if(typeof category === 'object' && category !== null
-  && typeof category.name === 'string') {
-    return await create(category.name, category.description);
-  } else if (typeof category === 'string') {
-    return await get(category);
-  } else throw new TypeError('\'category\' is not a string or object')
+  if(typeof category === 'object' && category !== null) {
+    if(typeof category.name === 'string') {
+      return await create(category.name, category.description);
+    } else if(typeof category.id === 'string') {
+      return await get(category.id);
+    }
+  }
+  throw new TypeError('\'category\' is not valid')
 }
 
 module.exports.createOrGet = createOrGet;
