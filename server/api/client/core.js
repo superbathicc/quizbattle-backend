@@ -24,11 +24,11 @@ async function cloneRepository(url, options) {
   cp.stderr.on('data', chunk => {
     out += chunk.toString('utf-8');
     process.stderr.write('git: ' + chunk.toString('utf-8'));
-  })
+  });
 
   cp.stdout.on('data', chunk => {
     process.stdin.write('git: ') + chunk.toString('utf-8');
-  })
+  });
 
   return await new Promise((resolve, reject) => {
     cp.on('exit', (code) => {
@@ -64,6 +64,16 @@ async function pullRepository(p) {
   let cp = spawn('git', ['pull'], {
     cwd: p
   });
+
+  let out = '';
+  cp.stderr.on('data', chunk => {
+    out += chunk.toString('utf-8');
+    process.stderr.write('git: ' + chunk.toString('utf-8'));
+  });
+
+  cp.stdout.on('data', chunk => {
+    process.stdin.write('git: ') + chunk.toString('utf-8');
+  });  
 
   return await new Promise((resolve, reject) => {
     cp.on('exit', (code) => {
