@@ -194,7 +194,7 @@ module.exports.update = update;
  */
 async function getRandom(category) {
   if(categoryAPI.core.check(category)) {
-    let count = await mongo.model.count({
+    let count = await mongo.model.countDocuments({
       'category': mongo.mongoose.Types.ObjectId(String(category._id))
     }).exec();
     

@@ -14,12 +14,20 @@ module.exports['POST /question'] = amw(async (req, res) => {
 
 module.exports['GET /question'] = amw(async (req, res) => {
   let category;
+  let maxAnswers;
   if(typeof req.query === 'object' && req.query !== null) {
     if(typeof req.query.category === 'string')
       category = await categoryAPI.core.get(req.query.category);
+    
+    if(typeof req.query.answers !== 'undefined')
+      maxAnswers = Number(req.query.answers);
   }
 
   let question = await core.getRandom(category);
+
+  if(maxAnswers) {
+    question = await core.limitAnswers(question, maxAnswers)
+  }
 
   res
   .status(200)

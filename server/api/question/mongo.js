@@ -26,6 +26,10 @@ let schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: categoryAPI.mongo.model.modelName
   },
+  time: {
+    type: Number,
+    default: 10000
+  },
   data: {
     type: String
   },
