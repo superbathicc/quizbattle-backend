@@ -2,9 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const os = require('os');
 const api = require('./api');
-const conf = require('../config'); 
+const conf = require('../config');
 const mongoose = require('mongoose');
-const cors = require('cors');
 
 let app = express();
 
@@ -27,15 +26,16 @@ async function init() {
     type: 'application/x-www-form-urlencoded'
   }));
 
-  
+
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'content-type');
     next();
   });
-  
+
   api.use(app);
-  
+
+  // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     if(typeof err === 'object' && err instanceof Error) {
       console.error(err);
@@ -54,27 +54,28 @@ async function init() {
   }
 
   return await Promise.all(Object.entries(os.networkInterfaces())
-  .map(entry => new Promise(async resolve => {
-    console.log('initializing network interface: ' + entry[0]);
-    
-    resolve(await Promise.all(
-      [].concat(...entry[1].map(iface => 
-        new Promise((resolve, reject) => {
-          let server = app
-          .listen(conf.server.port, iface.address, (err) => {
-            if(err) {
-              reject(err);
-              return;
-            }
-    
-            console.log(`started listening on [${iface.family}] ${iface.address} port:${conf.server.port}`);
-            resolve(server);
-          })
-        })))));
-  })));
+    .map(entry => new Promise(async resolve => {
+      console.log('initializing network interface: ' + entry[0]);
+
+      resolve(await Promise.all(
+        [].concat(...entry[1].map(iface =>
+          new Promise((resolve, reject) => {
+            let server = app
+              .listen(conf.server.port, iface.address, (err) => {
+                if(err) {
+                  reject(err);
+                  return;
+                }
+
+                console.log(`started listening on [${iface.family}] ${iface.address} port:${conf.server.port}`);
+                resolve(server);
+              });
+          })))));
+    })));
 }
 
 function runInit() {
+  // eslint-disable-next-line no-unused-vars
   init().then((servers) => {
     console.log('server running');
   }).catch((err) => {
