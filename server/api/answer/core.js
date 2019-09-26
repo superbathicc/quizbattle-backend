@@ -5,7 +5,7 @@ const mongo = require('./mongo');
  * @prop {boolean} throw
  * @prop {string} name
  * @prop {('parameter'|'property'|'')} type
- * @param {mongo.Answer} answer 
+ * @param {mongo.Answer} answer
  * @param {CheckOptions} options
  */
 async function check(answer, options) {
@@ -27,7 +27,7 @@ module.exports.check = check;
 
 /**
  * gets an answer by its id
- * @param {string} id 
+ * @param {string} id
  * @returns {Promise.<mongo.Answer>}
  */
 async function get(id) {
@@ -39,8 +39,8 @@ module.exports.get = get;
 
 /**
  * creates a new answer
- * @param {string} text 
- * @param {boolean} correct 
+ * @param {string} text
+ * @param {boolean} correct
  */
 async function create(text, correct) {
   return await mongo.model.create({
@@ -53,7 +53,7 @@ module.exports.create = create;
 
 /**
  * creates or gets an answer
- * @param {mongo.Answer|string} answer 
+ * @param {mongo.Answer|string} answer
  * `object` -> create\
  * `string` -> get by id
  * @returns {Promise<mongo.Answer>}
@@ -65,7 +65,7 @@ async function createOrGet (answer) {
       return await create(answer.text, answer.correct);
     else if(typeof answer.id === 'string') {
       return await get(answer.id);
-  } else throw new TypeError('\'answer\' is not a string or an object');
+    } else throw new TypeError('\'answer\' is not a string or an object');
 }
 
 module.exports.createOrGet = createOrGet;

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const express = require('express');
 const core = require('./core');
 const amw = require('../../../lib/async-middleware');
@@ -9,14 +10,14 @@ module.exports['POST /answer'] = amw(async (req, res) => {
   let answer = await core.create(req.body.text, req.body.correct);
 
   res
-  .status(200)
-  .jsonp(answer);
+    .status(200)
+    .jsonp(answer);
 });
 
 module.exports['GET /answer/:answerId'] = amw(async (req, res) => {
   let answer = await core.get(req.params['answerId']);
 
   res
-  .status(200)
-  .jsonp(answer);
+    .status(200)
+    .jsonp(answer);
 });

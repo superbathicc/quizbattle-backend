@@ -2,7 +2,7 @@ const url = require('url');
 
 let server = {
   port: 3003
-}
+};
 
 let mongo = {
   con: {
@@ -13,11 +13,11 @@ let mongo = {
     slashes: true
   },
   auth: {
-    username: "",
-    password: ""
+    username: '',
+    password: ''
   },
   url: ''
-}
+};
 
 if(mongo.auth.username && mongo.auth.password) {
   mongo.con.auth = `${mongo.auth.username}:${mongo.auth.password}`;
@@ -28,4 +28,4 @@ mongo.url = url.format(mongo.con);
 module.exports = {
   server,
   mongo
-}
+};

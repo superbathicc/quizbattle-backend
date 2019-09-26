@@ -1,4 +1,5 @@
 const mongo = require('./mongo');
+// eslint-disable-next-line no-unused-vars
 const config = require('./config');
 
 /**
@@ -6,7 +7,7 @@ const config = require('./config');
  * @prop {boolean} throw
  * @prop {string} name
  * @prop {('parameter'|'property'|'')} type
- * @param {mongo.Category} category 
+ * @param {mongo.Category} category
  * @param {CheckOptions} options
  */
 async function check(category, options) {
@@ -28,8 +29,8 @@ module.exports.check = check;
 
 /**
  * creates a new category
- * @param {string} name 
- * @param {string} description 
+ * @param {string} name
+ * @param {string} description
  */
 async function create(name, description) {
   return await mongo.model.create({
@@ -55,7 +56,7 @@ async function createOrGet(category) {
       return await get(category.id);
     }
   }
-  throw new TypeError('\'category\' is not valid')
+  throw new TypeError('\'category\' is not valid');
 }
 
 module.exports.createOrGet = createOrGet;
@@ -64,7 +65,7 @@ async function search(searchTerm) {
   let q = mongo.model.find();
 
   if(typeof searchTerm === 'string') {
-    q.where('name', {$regex: searchTerm})
+    q.where('name', {$regex: searchTerm});
   }
 
   return await q.exec();

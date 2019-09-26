@@ -1,4 +1,4 @@
-const instancedir = require('../../../lib/instancedir')
+const instancedir = require('../../../lib/instancedir');
 const path = require('path');
 
 module.exports.name = 'ClientAPI';

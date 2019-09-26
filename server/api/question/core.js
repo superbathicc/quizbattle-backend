@@ -4,7 +4,7 @@ const categoryAPI = require('../category');
 const answerAPI = require('../answer');
 
 /**
- * 
+ * checks if the object is an instance of the mongo model
  * @typedef {object} CheckOptions
  * @prop {boolean} throw
  * @prop {string} name
