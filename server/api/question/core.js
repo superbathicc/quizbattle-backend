@@ -8,9 +8,9 @@ const answerAPI = require('../answer');
  * @typedef {object} CheckOptions
  * @prop {boolean} throw
  * @prop {string} name
- * @prop {('parameter'|'property'|'')} type 
- * @param {mongo.Question} question 
- * @param {CheckOptions} options 
+ * @prop {('parameter'|'property'|'')} type
+ * @param {mongo.Question} question
+ * @param {CheckOptions} options
  */
 function check(question, options) {
   let valid = typeof question === 'object'
@@ -35,7 +35,7 @@ module.exports.check = check;
  * @prop {number} maxAnswers
  * @param {string} id
  * @param {GetOptions} options
- * @returns {Promise.<mongo.Question|mongo.model>} 
+ * @returns {Promise.<mongo.Question|mongo.model>}
  */
 async function get(id) {
   let q = mongo.model.findById(String(id));
@@ -49,28 +49,23 @@ module.exports.get = get;
 
 /**
  * limits the answers
- * @param {mongo.Question} question 
- * @param {number} amount 
+ * @param {mongo.Question} question
+ * @param {number} amount
  */
 function limitAnswers(question, amount) {
   check(question, {throw: true, name: 'question', type: 'parameter'});
-  
-  let maxAnswers = amount || config.maxAnswers;
 
-  if(typeof options === 'object' && options !== null) {
-    if(typeof options.maxAnswers === 'number')
-      maxAnswers = options.maxAnswers;
-  }
+  let maxAnswers = amount || config.maxAnswers;
 
   if(maxAnswers > 1) {
     if(question.answers.length > maxAnswers) {
       let selectedAnswers = [];
       let correctAnswers = question.answers
-      .filter(answ => answ.correct);
-      
+        .filter(answ => answ.correct);
+
       let rcorrect = correctAnswers.length < maxAnswers
-      ? correctAnswers.length 
-      : maxAnswers;
+        ? correctAnswers.length
+        : maxAnswers;
       rcorrect = Math.trunc(1 + Math.random() * (rcorrect - 1));
 
       for(let i = 0; i < rcorrect; i++) {
@@ -79,12 +74,12 @@ function limitAnswers(question, amount) {
         selectedAnswers.push(answ);
         correctAnswers.splice(index, 1);
       }
-  
+
       if(selectedAnswers.length < maxAnswers) {
         let restAmount = maxAnswers - selectedAnswers.length;
 
         let wrongAnswers = question.answers
-        .filter(answ => !answ.correct);
+          .filter(answ => !answ.correct);
 
         for(let i = 0; i < restAmount; i++) {
           let index = Math.trunc(Math.random() * wrongAnswers.length);
@@ -95,7 +90,7 @@ function limitAnswers(question, amount) {
       }
       question.selectedAnswers = selectedAnswers;
     }
-  };
+  }
 
   return question;
 }
@@ -121,8 +116,8 @@ module.exports.create = create;
 
 /**
  * sets the category
- * @param {mongo.Question|mongo.model} question 
- * @param {categoryAPI.mongo.Category} category 
+ * @param {mongo.Question|mongo.model} question
+ * @param {categoryAPI.mongo.Category} category
  */
 async function setCategory(question, category) {
   check(question, {throw: true, name: 'question', type: 'parameter'});
@@ -139,7 +134,7 @@ module.exports.setCategory = setCategory;
 
 /**
  * adds answers to the question
- * @param {mongo.Question|mongo.model} question 
+ * @param {mongo.Question|mongo.model} question
  * @param  {...answerAPI.mongo.Question} answers
  */
 async function addAnswer(question, ...answers) {
@@ -149,13 +144,13 @@ async function addAnswer(question, ...answers) {
     if(typeof answer === 'object'
     && answer !== null
     && answer._id)
-      return String(answer._id)
+      return String(answer._id);
     else return answer;
   });
 
   answers = answers
-  .filter(answer => answerAPI.core.check(answer))
-  .map(answer => mongo.mongoose.Types.ObjectId(String(answer._id)));
+    .filter(answer => answerAPI.core.check(answer))
+    .map(answer => mongo.mongoose.Types.ObjectId(String(answer._id)));
 
   question.answers.push(...answers);
   question.answers = Array.from(new Set(question.answers.map(a => {
@@ -176,8 +171,8 @@ module.exports.addAnswer = addAnswer;
 
 /**
  * updates a question
- * @param {mongo.Question|mongo.model} question 
- * @param {mongo.Question} obj 
+ * @param {mongo.Question|mongo.model} question
+ * @param {mongo.Question} obj
  */
 async function update(question, obj) {
   check(question, {throw: true, name: 'question', type: 'parameter'});
@@ -186,7 +181,7 @@ async function update(question, obj) {
 
   Object.keys(question).forEach(key => {
     if(typeof obj[key] !== 'undefined') question[key] = obj[key];
-  })
+  });
 
   return await question.save();
 }
@@ -203,30 +198,30 @@ async function getRandom(category) {
     let count = await mongo.model.countDocuments({
       'category': mongo.mongoose.Types.ObjectId(String(category._id))
     }).exec();
-    
+
     return await mongo.model
-    .findOne({category: mongo.mongoose.Types.ObjectId(String(category._id))})
-    .skip(Math.trunc(Math.random() * count))
-    .populate('answers')
-    .populate('category')
-    .exec();
+      .findOne({category: mongo.mongoose.Types.ObjectId(String(category._id))})
+      .skip(Math.trunc(Math.random() * count))
+      .populate('answers')
+      .populate('category')
+      .exec();
   } else {
     let index = Math.trunc(Math.random() * await mongo.model.countDocuments());
     return await mongo.model.findOne()
-    .skip(index)
-    .populate('answers')
-    .populate('category')
-    .exec();
+      .skip(index)
+      .populate('answers')
+      .populate('category')
+      .exec();
   }
 }
 
 module.exports.getRandom = getRandom;
 
 /**
- * 
- * @param {mongo.Question|mongo.model} question 
- * @param {string} name 
- * @param {Buffer} buffer 
+ *
+ * @param {mongo.Question|mongo.model} question
+ * @param {string} name
+ * @param {Buffer} buffer
  * @returns {Promise.<mongo.Question|mongo.model>}
  */
 async function data(question, name, type, buffer) {
